@@ -1,0 +1,55 @@
+{
+    "kind": "collectionType",
+    "collectionName": "madings",
+    "info": {
+        "singularName": "mading",
+        "pluralName": "madings",
+        "displayName": "Mading"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "Judul": {
+            "type": "string"
+        },
+        "Slug": {
+            "type": "uid",
+            "targetField": "Judul"
+        },
+        "Penulis": {
+            "type": "string"
+        },
+        "Kelas": {
+            "type": "string"
+        },
+        "Kategori": {
+            "type": "enumeration",
+            "enum": [
+                "Puisi",
+                "Cerpen",
+                "Komik",
+                "Poster",
+                "Lukisan",
+                "Artikel_Siswa"
+            ]
+        },
+        "Gambar": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": [
+                "images",
+                "files",
+                "videos",
+                "audios"
+            ]
+        },
+        "Konten": {
+            "type": "blocks"
+        },
+        "Tanggal": {
+            "type": "date"
+        }
+    }
+}

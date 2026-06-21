@@ -1,0 +1,48 @@
+{
+    "kind": "collectionType",
+    "collectionName": "artikels",
+    "info": {
+        "singularName": "artikel",
+        "pluralName": "artikels",
+        "displayName": "Artikel"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "Judul": {
+            "type": "string",
+            "unique": false
+        },
+        "Slug": {
+            "type": "uid",
+            "targetField": "Judul"
+        },
+        "Gambar_Cover": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": [
+                "images",
+                "files",
+                "videos",
+                "audios"
+            ]
+        },
+        "Kategori": {
+            "type": "enumeration",
+            "enum": [
+                "Akademik",
+                "Prestasi",
+                "Kegiatan",
+                "Umum"
+            ]
+        },
+        "Konten": {
+            "type": "blocks"
+        },
+        "Tanggal": {
+            "type": "date"
+        }
+    }
+}

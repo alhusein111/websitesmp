@@ -1,0 +1,21 @@
+{
+    "kind": "singleType",
+    "collectionName": "profil_sekolahs",
+    "info": {
+        "singularName": "profil-sekolah",
+        "pluralName": "profil-sekolahs",
+        "displayName": "Profil Sekolah"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "Sejarah": {
+            "type": "blocks"
+        },
+        "Visi_Misi": {
+            "type": "blocks"
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "events",
+  "info": {
+    "singularName": "event",
+    "pluralName": "events",
+    "displayName": "Event"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "NamaKegiatan": {
+      "type": "string"
+    },
+    "TanggalMulai": {
+      "type": "date"
+    },
+    "TanggalSelesai": {
+      "type": "date"
+    },
+    "DeskripsiSingkat": {
+      "type": "text"
+    },
+    "Lokasi": {
+      "type": "string"
+    },
+    "TampilkanDiSidebar": {
+      "type": "boolean"
+    }
+  }
+}

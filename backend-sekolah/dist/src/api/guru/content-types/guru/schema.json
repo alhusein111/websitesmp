@@ -1,0 +1,31 @@
+{
+    "kind": "collectionType",
+    "collectionName": "gurus",
+    "info": {
+        "singularName": "guru",
+        "pluralName": "gurus",
+        "displayName": "Guru"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "Nama": {
+            "type": "string"
+        },
+        "Mata_Pelajaran": {
+            "type": "string"
+        },
+        "Foto": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": [
+                "images",
+                "files",
+                "videos",
+                "audios"
+            ]
+        }
+    }
+}
