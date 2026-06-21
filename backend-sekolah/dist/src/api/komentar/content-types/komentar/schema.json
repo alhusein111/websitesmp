@@ -1,0 +1,30 @@
+{
+    "kind": "collectionType",
+    "collectionName": "komentars",
+    "info": {
+        "singularName": "komentar",
+        "pluralName": "komentars",
+        "displayName": "Komentar"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "Nama": {
+            "type": "string"
+        },
+        "Isi": {
+            "type": "string"
+        },
+        "MadingId": {
+            "type": "integer"
+        },
+        "ParentId": {
+            "type": "string"
+        },
+        "Tampilkan": {
+            "type": "boolean"
+        }
+    }
+}

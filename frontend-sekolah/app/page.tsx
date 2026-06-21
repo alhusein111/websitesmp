@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
-import { strapi, getStrapiMedia } from '@/lib/strapi';
+import { strapi } from '@/lib/strapi';
 
 // Fungsi Fetching Data langsung ke Strapi CMS
 async function getLandingPageData() {
@@ -199,7 +200,7 @@ export default async function Home() {
                 <span className="font-mono text-xs font-bold tracking-widest text-black">SAMBUTAN</span>
               </div>
               <h2 className="font-display text-2xl md:text-4xl text-black font-bold mb-6 leading-tight">
-                "Membangun generasi cerdas berakhlak mulia untuk masa depan yang lebih baik."
+                &quot;Membangun generasi cerdas berakhlak mulia untuk masa depan yang lebih baik.&quot;
               </h2>
               <div className="text-gray-600 font-body text-sm md:text-base space-y-4 leading-relaxed whitespace-pre-wrap">
                 <p>{sambutanKepsek}</p>

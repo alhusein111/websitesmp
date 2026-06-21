@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { strapi } from '@/lib/strapi';
 
 // Konfigurasi URL dasar Strapi (Sesuaikan jika port Strapi mas brow berbeda)
@@ -73,16 +75,16 @@ export default async function ProfilPage() {
     <main className="w-full pb-12 bg-[#f7f9fb]">
       
       {/* 1. HERO EDITORIAL SECTION */}
-      <section className="relative w-full h-[614px] min-h-[500px] flex items-end pb-12 px-6 md:px-12 bg-[#e6e8ea] overflow-hidden">
+      <section className="relative w-full h-153.5 min-h-125 flex items-end pb-12 px-6 md:px-12 bg-surface-container-high overflow-hidden">
         <img 
           src={heroImage} 
           alt="Hero Banner Profil" 
           className="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-multiply transition-all duration-700"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent"></div>
         <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-6 text-white">
           <div className="md:col-span-8 flex flex-col gap-3">
-            <span className="font-mono text-xs text-[#ffdf9a] tracking-widest uppercase font-semibold">
+            <span className="font-mono text-xs text-secondary-fixed tracking-widest uppercase font-semibold">
               Profil Sekolah
             </span>
             <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight tracking-tight text-white">
@@ -97,16 +99,16 @@ export default async function ProfilPage() {
 
       {/* 2. BENTO GRID: HISTORY & VISION/MISSION */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 py-12 mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 auto-rows-[auto]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 auto-rows-auto">
           
           {/* SEJARAH CARD (Large Left) */}
           <div className="lg:col-span-7 bg-white rounded-2xl p-8 md:p-12 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.05)] border border-gray-200/50 flex flex-col justify-center transition-all hover:-translate-y-1 hover:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] relative overflow-hidden group">
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-black transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-linear-to-r from-cyan-400 to-black transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
             <div className="flex items-center gap-3 mb-6">
               <span className="material-symbols-outlined text-black text-3xl">history_edu</span>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-black">Sejarah Perjalanan</h2>
             </div>
-            <div className="space-y-4 font-body text-base text-[#45464d] leading-relaxed whitespace-pre-wrap">
+            <div className="space-y-4 font-body text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap">
               <p>{sejarah}</p>
             </div>
           </div>
@@ -117,7 +119,7 @@ export default async function ProfilPage() {
             <div className="bg-black text-white rounded-2xl p-8 shadow-sm flex flex-col h-full justify-center relative overflow-hidden group">
               <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-yellow-600/20 rounded-full blur-2xl transition-all group-hover:bg-yellow-600/40"></div>
               <div className="relative z-10">
-                <h3 className="font-mono text-xs text-[#ffdf9a] tracking-wider uppercase font-bold mb-2">Visi Kami</h3>
+                <h3 className="font-mono text-xs text-secondary-fixed tracking-wider uppercase font-bold mb-2">Visi Kami</h3>
                 <p className="font-display text-xl md:text-2xl leading-snug text-white font-bold">
                   {visi}
                 </p>
@@ -125,9 +127,9 @@ export default async function ProfilPage() {
             </div>
 
             {/* Misi Card */}
-            <div className="bg-[#f2f4f6] rounded-2xl p-8 border border-gray-200/50 shadow-sm flex flex-col h-full justify-center">
-              <h3 className="font-mono text-xs text-[#45464d] tracking-wider uppercase font-bold mb-4">Misi Utama</h3>
-              <ul className="space-y-3 font-body text-sm md:text-base text-[#45464d]">
+            <div className="bg-surface-container-low rounded-2xl p-8 border border-gray-200/50 shadow-sm flex flex-col h-full justify-center">
+              <h3 className="font-mono text-xs text-on-surface-variant tracking-wider uppercase font-bold mb-4">Misi Utama</h3>
+              <ul className="space-y-3 font-body text-sm md:text-base text-on-surface-variant">
                 {Array.isArray(misi) ? (
                   misi.map((item: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-3">
@@ -150,19 +152,19 @@ export default async function ProfilPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 bg-white p-8 rounded-2xl border border-gray-200/50 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.03)]">
           <div className="flex flex-col items-center justify-center p-4 text-center">
             <span className="font-mono text-5xl md:text-6xl text-black font-bold mb-2">35+</span>
-            <span className="font-body text-sm text-[#45464d] font-medium">Tahun Berdiri</span>
+            <span className="font-body text-sm text-on-surface-variant font-medium">Tahun Berdiri</span>
           </div>
           <div className="flex flex-col items-center justify-center p-4 text-center md:border-l border-gray-100">
             <span className="font-mono text-5xl md:text-6xl text-black font-bold mb-2">98<span className="text-3xl">%</span></span>
-            <span className="font-body text-sm text-[#45464d] font-medium">Tingkat Kelulusan</span>
+            <span className="font-body text-sm text-on-surface-variant font-medium">Tingkat Kelulusan</span>
           </div>
           <div className="flex flex-col items-center justify-center p-4 text-center lg:border-l border-gray-100">
             <span className="font-mono text-5xl md:text-6xl text-black font-bold mb-2">45</span>
-            <span className="font-body text-sm text-[#45464d] font-medium">Tenaga Pendidik</span>
+            <span className="font-body text-sm text-on-surface-variant font-medium">Tenaga Pendidik</span>
           </div>
           <div className="flex flex-col items-center justify-center p-4 text-center md:border-l border-gray-100">
             <span className="font-mono text-5xl md:text-6xl text-black font-bold mb-2">800+</span>
-            <span className="font-body text-sm text-[#45464d] font-medium">Siswa Aktif</span>
+            <span className="font-body text-sm text-on-surface-variant font-medium">Siswa Aktif</span>
           </div>
         </div>
       </section>
@@ -172,7 +174,7 @@ export default async function ProfilPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="max-w-2xl">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-black mb-4">Tim Pendidik Kami</h2>
-            <p className="font-body text-base md:text-lg text-[#45464d] leading-relaxed">
+            <p className="font-body text-base md:text-lg text-on-surface-variant leading-relaxed">
               Di balik prestasi setiap siswa, terdapat dedikasi tanpa batas dari para guru dan staf kami. Mereka bukan sekadar pengajar, melainkan mentor dan teladan.
             </p>
           </div>
@@ -197,7 +199,7 @@ export default async function ProfilPage() {
                   key={guru.id} 
                   className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-300 border border-gray-200/50 ${isStaggered ? 'mt-0 lg:mt-8' : ''}`}
                 >
-                  <div className="aspect-[3/4] w-full relative overflow-hidden bg-[#e6e8ea]">
+                  <div className="aspect-3/4 w-full relative overflow-hidden bg-surface-container-high">
                     <img 
                       src={fotoGuru} 
                       alt={guru.Nama || "Foto Guru"} 
@@ -208,7 +210,7 @@ export default async function ProfilPage() {
                     <h3 className="font-display text-lg font-bold text-black mb-1 line-clamp-1">
                       {guru.Nama || "Nama Tenaga Pendidik"}
                     </h3>
-                    <p className="font-mono text-[11px] tracking-wider uppercase text-[#45464d] font-bold">
+                    <p className="font-mono text-[11px] tracking-wider uppercase text-on-surface-variant font-bold">
                       {guru.Mata_Pelajaran || "Staff Pengajar"}
                     </p>
                   </div>
@@ -228,7 +230,7 @@ export default async function ProfilPage() {
                   key={index} 
                   className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-300 border border-gray-200/50 ${index % 4 === 1 || index % 4 === 3 ? 'mt-0 lg:mt-8' : ''}`}
                 >
-                  <div className="aspect-[3/4] w-full relative overflow-hidden bg-[#e6e8ea]">
+                  <div className="aspect-3/4 w-full relative overflow-hidden bg-surface-container-high">
                     <img 
                       src={fallbackGuru.img} 
                       alt={fallbackGuru.nama} 
@@ -237,7 +239,7 @@ export default async function ProfilPage() {
                   </div>
                   <div className="p-6 bg-white relative z-10 border-t border-gray-100 group-hover:border-cyan-200 transition-colors">
                     <h3 className="font-display text-lg font-bold text-black mb-1">{fallbackGuru.nama}</h3>
-                    <p className="font-mono text-[11px] tracking-wider uppercase text-[#45464d] font-bold">{fallbackGuru.mapel}</p>
+                    <p className="font-mono text-[11px] tracking-wider uppercase text-on-surface-variant font-bold">{fallbackGuru.mapel}</p>
                   </div>
                 </div>
               ))}

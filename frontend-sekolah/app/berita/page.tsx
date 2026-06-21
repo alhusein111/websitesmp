@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from 'next/link';
 
 // Konfigurasi URL dasar Strapi
@@ -77,13 +79,13 @@ export default async function NewsPage() {
           const heroImg = getImageUrl(heroArticle.Gambar_Cover, 'https://images.unsplash.com/photo-1511629091441-ee46146481b6?q=80&w=1200');
 
           return (
-            <section className="relative rounded-3xl overflow-hidden group shadow-sm hover:shadow-2xl transition-all duration-500 h-[400px] md:h-[500px] border border-gray-100 block">
+            <section className="relative rounded-3xl overflow-hidden group shadow-sm hover:shadow-2xl transition-all duration-500 h-100 md:h-125 border border-gray-100 block">
               <img 
                 alt={heroJudul} 
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                 src={heroImg} 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent"></div>
               
               <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3 z-10 flex flex-col justify-end h-full">
                 <div className="inline-flex bg-cyan-500 text-white font-mono text-[10px] font-bold px-3 py-1 rounded-full mb-4 tracking-wider w-max uppercase">
@@ -142,7 +144,7 @@ export default async function NewsPage() {
                       <div className="relative w-full h-48 overflow-hidden">
                         <img src={imgUrl} alt={judul} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
-                      <div className="p-6 flex flex-col flex-grow">
+                      <div className="p-6 flex flex-col grow">
                         <div className="flex items-center justify-between mb-4">
                           <span className="bg-amber-100 text-amber-800 font-mono text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wide">
                             {kategori}
@@ -155,7 +157,7 @@ export default async function NewsPage() {
                         <h3 className="font-display text-xl font-bold text-black leading-snug mb-3 group-hover:text-cyan-600 transition-colors">
                           {judul}
                         </h3>
-                        <p className="font-body text-gray-600 text-sm mb-6 flex-grow line-clamp-3">
+                        <p className="font-body text-gray-600 text-sm mb-6 grow line-clamp-3">
                           {kontenText}
                         </p>
                         <span className="text-black font-mono text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
@@ -195,7 +197,7 @@ export default async function NewsPage() {
               
               <ul className="flex flex-col gap-6">
                 <li className="flex gap-4 items-start group">
-                  <div className="flex flex-col items-center justify-center bg-gray-50 rounded-xl py-3 w-[64px] shrink-0 border border-gray-100 group-hover:border-cyan-500 group-hover:bg-cyan-50 transition-colors shadow-sm">
+                  <div className="flex flex-col items-center justify-center bg-gray-50 rounded-xl py-3 w-16 shrink-0 border border-gray-100 group-hover:border-cyan-500 group-hover:bg-cyan-50 transition-colors shadow-sm">
                     <span className="font-mono text-[10px] font-bold text-gray-500 uppercase">Jun</span>
                     <span className="font-display text-2xl font-bold text-black group-hover:text-cyan-700">05</span>
                   </div>

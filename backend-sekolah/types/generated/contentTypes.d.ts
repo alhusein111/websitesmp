@@ -567,12 +567,12 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiMadingMading extends Struct.CollectionTypeSchema {
-  collectionName: 'madings';
+export interface ApiKomentarKomentar extends Struct.CollectionTypeSchema {
+  collectionName: 'komentars';
   info: {
-    displayName: 'Mading';
-    pluralName: 'madings';
-    singularName: 'mading';
+    displayName: 'Komentar';
+    pluralName: 'komentars';
+    singularName: 'komentar';
   };
   options: {
     draftAndPublish: true;
@@ -581,13 +581,55 @@ export interface ApiMadingMading extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Isi: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::komentar.komentar'
+    > &
+      Schema.Attribute.Private;
+    MadingId: Schema.Attribute.Integer;
+    Nama: Schema.Attribute.String;
+    ParentId: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    Tampilkan: Schema.Attribute.Boolean;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiMadingMading extends Struct.CollectionTypeSchema {
+  collectionName: 'madings';
+  info: {
+    displayName: 'Mading';
+    pluralName: 'madings';
+    singularName: 'mading';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Dislikes: Schema.Attribute.Integer;
     Gambar: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     Judul: Schema.Attribute.String;
     Kategori: Schema.Attribute.Enumeration<
-      ['Puisi', 'Cerpen', 'Komik', 'Poster', 'Lukisan', 'Artikel_Siswa']
+      [
+        'Puisi',
+        'Cerpen',
+        'Komik',
+        'Poster',
+        'Lukisan',
+        'Video',
+        'Artikel Siswa',
+      ]
     >;
     Kelas: Schema.Attribute.String;
     Konten: Schema.Attribute.Blocks;
+    Likes: Schema.Attribute.Integer;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1148,6 +1190,7 @@ declare module '@strapi/strapi' {
       'api::event.event': ApiEventEvent;
       'api::guru.guru': ApiGuruGuru;
       'api::homepage.homepage': ApiHomepageHomepage;
+      'api::komentar.komentar': ApiKomentarKomentar;
       'api::mading.mading': ApiMadingMading;
       'api::profil-sekolah.profil-sekolah': ApiProfilSekolahProfilSekolah;
       'plugin::content-releases.release': PluginContentReleasesRelease;
