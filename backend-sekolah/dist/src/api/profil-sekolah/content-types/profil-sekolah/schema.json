@@ -14,7 +14,10 @@
         "Sejarah": {
             "type": "blocks"
         },
-        "Visi_Misi": {
+        "Visi": {
+            "type": "blocks"
+        },
+        "Misi": {
             "type": "blocks"
         }
     }

@@ -43,6 +43,12 @@
     },
     "Tanggal": {
       "type": "date"
+    },
+    "Likes": {
+      "type": "integer"
+    },
+    "Dislikes": {
+      "type": "integer"
     }
   }
 }

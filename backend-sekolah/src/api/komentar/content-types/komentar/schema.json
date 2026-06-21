@@ -23,8 +23,12 @@
     "ParentId": {
       "type": "string"
     },
+    "BeritaId": {
+      "type": "integer"
+    },
     "Tampilkan": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": true
     }
   }
 }

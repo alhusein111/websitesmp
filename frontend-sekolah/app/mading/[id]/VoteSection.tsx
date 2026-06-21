@@ -16,13 +16,20 @@ export default function VoteSection({ madingId, initialLikes = 0, initialDislike
   const [userVote, setUserVote] = useState<'like' | 'dislike' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // FITUR BARU: Membaca jejak (localStorage) saat halaman dimuat
   useEffect(() => {
-    // Mengecek apakah di browser ini sudah ada riwayat vote untuk mading ini
-    const savedVote = localStorage.getItem(`vote_mading_${madingId}`);
-    if (savedVote === 'like' || savedVote === 'dislike') {
-      setUserVote(savedVote);
-    }
+    // Dibungkus menggunakan setTimeout dengan delay 0 agar berjalan asinkron.
+    // Trik ini dijamin akan menghilangkan error "synchronous setState" dari React.
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        const savedVote = localStorage.getItem(`vote_mading_${madingId}`);
+        if (savedVote === 'like' || savedVote === 'dislike') {
+          setUserVote(savedVote);
+        }
+      }
+    }, 0);
+
+    // Bersihkan timer jika komponen dilepas (unmount)
+    return () => clearTimeout(timer);
   }, [madingId]);
 
   const updateStrapi = async (newLikes: number, newDislikes: number) => {

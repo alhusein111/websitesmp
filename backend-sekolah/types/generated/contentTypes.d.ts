@@ -454,6 +454,7 @@ export interface ApiArtikelArtikel extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Dislikes: Schema.Attribute.Integer;
     Gambar_Cover: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
@@ -462,6 +463,7 @@ export interface ApiArtikelArtikel extends Struct.CollectionTypeSchema {
       ['Akademik', 'Prestasi', 'Kegiatan', 'Umum']
     >;
     Konten: Schema.Attribute.Blocks;
+    Likes: Schema.Attribute.Integer;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -480,7 +482,7 @@ export interface ApiArtikelArtikel extends Struct.CollectionTypeSchema {
 export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   collectionName: 'events';
   info: {
-    displayName: 'Event';
+    displayName: 'Kegiatan';
     pluralName: 'events';
     singularName: 'event';
   };
@@ -578,6 +580,7 @@ export interface ApiKomentarKomentar extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    BeritaId: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -592,7 +595,7 @@ export interface ApiKomentarKomentar extends Struct.CollectionTypeSchema {
     Nama: Schema.Attribute.String;
     ParentId: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    Tampilkan: Schema.Attribute.Boolean;
+    Tampilkan: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -614,7 +617,10 @@ export interface ApiMadingMading extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Dislikes: Schema.Attribute.Integer;
-    Gambar: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Gambar: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     Judul: Schema.Attribute.String;
     Kategori: Schema.Attribute.Enumeration<
       [
@@ -666,12 +672,43 @@ export interface ApiProfilSekolahProfilSekolah extends Struct.SingleTypeSchema {
       'api::profil-sekolah.profil-sekolah'
     > &
       Schema.Attribute.Private;
+    Misi: Schema.Attribute.Blocks;
     publishedAt: Schema.Attribute.DateTime;
     Sejarah: Schema.Attribute.Blocks;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Visi_Misi: Schema.Attribute.Blocks;
+    Visi: Schema.Attribute.Blocks;
+  };
+}
+
+export interface ApiTataUsahaTataUsaha extends Struct.CollectionTypeSchema {
+  collectionName: 'tata_usahas';
+  info: {
+    displayName: 'Tata Usaha';
+    pluralName: 'tata-usahas';
+    singularName: 'tata-usaha';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Foto: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Jabatan: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tata-usaha.tata-usaha'
+    > &
+      Schema.Attribute.Private;
+    Nama: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1193,6 +1230,7 @@ declare module '@strapi/strapi' {
       'api::komentar.komentar': ApiKomentarKomentar;
       'api::mading.mading': ApiMadingMading;
       'api::profil-sekolah.profil-sekolah': ApiProfilSekolahProfilSekolah;
+      'api::tata-usaha.tata-usaha': ApiTataUsahaTataUsaha;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

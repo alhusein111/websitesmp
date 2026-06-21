@@ -16,9 +16,9 @@ export default function Footer() {
         <div>
           <h4 className="font-mono text-xs font-bold tracking-widest text-gray-300 mb-4">TAUTAN PENTING</h4>
           <ul className="flex flex-col gap-3 text-sm text-gray-400">
-            <li><a className="hover:text-yellow-500 transition-colors" href="#">Instagram</a></li>
-            <li><a className="hover:text-yellow-500 transition-colors" href="#">YouTube</a></li>
-            <li><a className="hover:text-yellow-500 transition-colors" href="#">WhatsApp</a></li>
+            <li><a className="hover:text-yellow-500 transition-colors" href="https://www.instagram.com/official.smpyapialhusaeni/">Instagram</a></li>
+            <li><a className="hover:text-yellow-500 transition-colors" href="https://www.tiktok.com/@smpyapialhusaeni">Tiktok</a></li>
+            <li><a className="hover:text-yellow-500 transition-colors" href="https://wa.me/6281234567890">WhatsApp</a></li>
           </ul>
         </div>
         <div>

@@ -34,15 +34,17 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           {/* 4. Terapkan logika kondisi kelas berdasarkan pathname */}
           <Link href="/" className={pathname === '/' ? activeClass : inactiveClass}>HOME</Link>
+          <Link href="/berita" className={pathname.startsWith('/berita') ? activeClass : inactiveClass}>BERITA</Link>
           <Link href="/profil" className={pathname === '/profil' ? activeClass : inactiveClass}>PROFILE</Link>
+          <Link href="/staf" className={pathname === '/staf' ? activeClass : inactiveClass}>STAF</Link>
           <Link href="/mading" className={pathname === '/mading' ? activeClass : inactiveClass}>MADING DIGITAL</Link>
           <Link href="/spmb" className={pathname === '/spmb' ? activeClass : inactiveClass}>SPMB</Link>
-          <Link href="/berita" className={pathname.startsWith('/berita') ? activeClass : inactiveClass}>BERITA</Link>
+          <Link href="https://cbt.smpyapialhusaeni.sch.id/login" className={pathname === '' ? activeClass : inactiveClass}>CBT</Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <span className="material-symbols-outlined text-gray-600 cursor-pointer hover:text-black">search</span>
-          <span className="material-symbols-outlined text-gray-600 cursor-pointer hover:text-black">light_mode</span>
+          {/* <span className="material-symbols-outlined text-gray-600 cursor-pointer hover:text-black">search</span>
+          <span className="material-symbols-outlined text-gray-600 cursor-pointer hover:text-black">light_mode</span> */}
           <Link href="/spmb" className="bg-black text-white px-6 py-3 rounded-lg font-mono text-xs font-semibold hover:bg-gray-800 transition-colors shadow-sm">
             Daftar Sekarang
           </Link>
@@ -59,6 +61,7 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-b border-gray-200 px-6 py-4 flex flex-col gap-4 animate-fadeIn">
           <Link href="/" className={pathname === '/' ? "font-semibold text-black" : "text-gray-600"} onClick={() => setIsOpen(false)}>Home</Link>
           <Link href="/profil" className={pathname === '/profil' ? "font-semibold text-black" : "text-gray-600"} onClick={() => setIsOpen(false)}>Profile</Link>
+          <Link href="/staf" className={pathname === '/staf' ? "font-semibold text-black" : "text-gray-600"} onClick={() => setIsOpen(false)}>Staf</Link>
           <Link href="/mading" className={pathname === '/mading' ? "font-semibold text-black" : "text-gray-600"} onClick={() => setIsOpen(false)}>Mading Digital</Link>
           <Link href="/spmb" className={pathname === '/spmb' ? "font-semibold text-black" : "text-gray-600"} onClick={() => setIsOpen(false)}>SPMB</Link>
           <Link href="/berita" className={pathname.startsWith('/berita') ? "font-semibold text-black" : "text-gray-600"} onClick={() => setIsOpen(false)}>BERITA</Link>

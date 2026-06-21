@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tata_usahas",
+  "info": {
+    "singularName": "tata-usaha",
+    "pluralName": "tata-usahas",
+    "displayName": "Tata Usaha"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nama": {
+      "type": "string"
+    },
+    "Jabatan": {
+      "type": "string"
+    },
+    "Foto": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
