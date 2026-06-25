@@ -456,7 +456,8 @@ export interface ApiArtikelArtikel extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     Dislikes: Schema.Attribute.Integer;
     Gambar_Cover: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
+      'images' | 'files' | 'videos' | 'audios',
+      true
     >;
     Judul: Schema.Attribute.String;
     Kategori: Schema.Attribute.Enumeration<

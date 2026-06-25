@@ -1,32 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
 import { strapi } from '@/lib/strapi';
-import ScrollReveal from '@/components/ScrollReveal'; // <-- IMPORT KOMPONEN ANIMASI KITA
+import ScrollReveal from '@/components/ScrollReveal';
 
 // Fungsi Fetching Data langsung ke Strapi CMS
 async function getLandingPageData() {
   try {
-    // Tarik data Homepage (Single Type), Berita, dan Mading (Collection Type) sekaligus
-    const [homepageRes, artikelRes, madingRes] = await Promise.all([
+    const hariIni = new Date().toISOString().split('T')[0];
+
+    // Tarik data Homepage (Single Type), Berita, Mading, dan Kegiatan sekaligus
+    const [homepageRes, artikelRes, madingRes, kegiatanRes] = await Promise.all([
       strapi.get('/homepage?populate=*'),
       strapi.get('/artikels?populate=*&pagination[limit]=3&sort=id:desc'),
       strapi.get('/madings?populate=*&pagination[limit]=3&sort=id:desc'),
+      strapi.get(`/events?filters[TampilkanDiSidebar][$eq]=true&filters[$or][0][TanggalSelesai][$gte]=${hariIni}&filters[$or][1][TanggalMulai][$gte]=${hariIni}&sort=TanggalMulai:asc&pagination[limit]=4`)
     ]);
 
     return {
       homepage: homepageRes.data?.data || null,
       artikels: artikelRes.data?.data || [],
       madings: madingRes.data?.data || [],
+      kegiatan: kegiatanRes.data?.data || [],
     };
   } catch (error) {
     console.error("Gagal menarik data dari Strapi:", error);
-    return { homepage: null, artikels: [], madings: [] };
+    return { homepage: null, artikels: [], madings: [], kegiatan: [] };
   }
 }
 
 export default async function Home() {
-  const { homepage, artikels, madings } = await getLandingPageData();
+  const { homepage, artikels, madings, kegiatan } = await getLandingPageData();
 
   // Definisikan nilai default jika data CMS masih kosong/gagal fetch
   const teksHero = homepage?.Teks_Hero || "Selamat Datang di SMP YAPI AL-HUSAENI";
@@ -43,6 +48,7 @@ export default async function Home() {
 
   return (
     <div className="overflow-hidden"> {/* Tambahan overflow-hidden agar animasi dari samping tidak merusak layout */}
+      
       {/* 1. HERO SECTION */}
       <section className="relative w-full h-[70vh] min-h-125 flex items-center justify-center overflow-hidden bg-black">
         <div className="absolute inset-0 w-full h-full">
@@ -212,7 +218,86 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 4. SAMBUTAN KEPALA SEKOLAH */}
+      {/* 4. KEGIATAN MENDATANG */}
+      <section className="py-20 bg-white border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <ScrollReveal delay={0.1} direction="left">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="material-symbols-outlined text-cyan-600 bg-cyan-50 p-2 rounded-full">event_note</span>
+                  <h2 className="font-display text-2xl md:text-3xl font-bold text-black">Agenda & Kegiatan</h2>
+                </div>
+                <p className="font-body text-gray-500 text-sm max-w-xl">
+                  Jangan lewatkan berbagai kegiatan penting, seminar, dan acara ekstrakurikuler yang akan datang di sekolah kami.
+                </p>
+              </div>
+            </ScrollReveal>
+            
+            <ScrollReveal delay={0.2} direction="right">
+              <Link href="/kalender" className="inline-flex items-center gap-2 px-6 py-3 bg-gray-50 text-black rounded-full font-mono text-xs font-bold hover:bg-black hover:text-white transition-colors border border-gray-200">
+                Lihat Kalender Penuh
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </Link>
+            </ScrollReveal>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {kegiatan.length > 0 ? (
+              kegiatan.map((item: any, index: number) => {
+                const data = item.attributes || item;
+                const dateObj = new Date(data.TanggalMulai);
+                const tgl = dateObj.getDate();
+                const bln = dateObj.toLocaleDateString('id-ID', { month: 'short' }).toUpperCase();
+                const startDateFull = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                const endDateFull = data.TanggalSelesai ? new Date(data.TanggalSelesai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : null;
+                const rentangTanggal = endDateFull && startDateFull !== endDateFull ? `${startDateFull} - ${endDateFull}` : startDateFull;
+
+                return (
+                  <ScrollReveal key={item.id} delay={0.1 * (index + 1)} direction="up">
+                    <div className="bg-white border border-gray-100 rounded-2xl p-6 ambient-shadow hover:border-cyan-500 hover:shadow-lg transition-all group h-full flex flex-col">
+                      <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-50">
+                        <div className="flex flex-col items-center justify-center bg-cyan-50 text-cyan-700 rounded-xl w-14 h-14 shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                          <span className="font-mono text-[10px] font-bold uppercase">{bln}</span>
+                          <span className="font-display text-xl font-bold leading-none">{tgl}</span>
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-mono text-gray-500 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px]">calendar_month</span> 
+                            {rentangTanggal}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <h4 className="font-bold text-black text-lg leading-tight mb-2 group-hover:text-cyan-600 transition-colors">
+                        {data.NamaKegiatan}
+                      </h4>
+                      <p className="font-body text-sm text-gray-500 line-clamp-3 mb-4 grow">
+                        {data.DeskripsiSingkat}
+                      </p>
+                      
+                      {data.Lokasi && (
+                        <div className="mt-auto pt-4 flex items-center gap-2 text-xs font-mono text-gray-500">
+                          <span className="material-symbols-outlined text-[16px] text-gray-400">location_on</span>
+                          <span className="truncate">{data.Lokasi}</span>
+                        </div>
+                      )}
+                    </div>
+                  </ScrollReveal>
+                );
+              })
+            ) : (
+              <div className="col-span-full py-12 text-center border border-dashed border-gray-200 rounded-2xl bg-gray-50">
+                <span className="material-symbols-outlined text-4xl text-gray-300 mb-2">event_busy</span>
+                <p className="text-gray-500 font-body">Belum ada agenda terdekat.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. SAMBUTAN KEPALA SEKOLAH */}
       <section className="py-24 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -247,6 +332,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }

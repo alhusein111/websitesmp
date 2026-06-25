@@ -21,7 +21,7 @@
     },
     "Gambar_Cover": {
       "type": "media",
-      "multiple": false,
+      "multiple": true,
       "allowedTypes": [
         "images",
         "files",
