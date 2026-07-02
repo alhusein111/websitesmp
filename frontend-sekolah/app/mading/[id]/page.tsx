@@ -1,17 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { strapi } from '@/lib/strapi';
 import Link from 'next/link';
 import CommentSection from './CommentSection';
 import VoteSection from './VoteSection';
-import ShareButtons from './ShareButtons'; // IMPORT KOMPONEN SHARE KITA
+import ShareButtons from './ShareButtons';
+import ImageGallery from './ImageGallery'; 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
 function getAllMediaInfo(media: any) {
   if (!media) return [];
   let items: any[] = [];
+  
   if (Array.isArray(media)) items = media;
   else if (media.data && Array.isArray(media.data)) items = media.data;
   else if (media.data && !Array.isArray(media.data)) items = [media.data];
@@ -34,28 +38,12 @@ function getAllMediaInfo(media: any) {
   }).filter(m => m.url !== '');
 }
 
-// Fungsi ringan ambil 1 thumbnail untuk direkomendasi
 function getThumbnailUrl(media: any) {
   const items = getAllMediaInfo(media);
   if (items.length > 0 && !items[0].isVideo) return items[0].url;
-  return "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=400"; // Fallback gambar
+  return "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=400";
 }
 
-function extractText(content: any): string {
-  if (!content) return "";
-  if (typeof content === 'string') return content;
-  if (Array.isArray(content)) {
-    return content.map(block => {
-      if (block.children && Array.isArray(block.children)) {
-        return block.children.map((child: any) => child.text || "").join('');
-      }
-      return "";
-    }).join('\n\n');
-  }
-  return "";
-}
-
-// Fungsi Cari Rekomendasi Mading Lainnya
 async function getRekomendasi(kategori: string, excludeId: string) {
   try {
     const res = await strapi.get(`/madings?filters[Kategori][$eq]=${kategori}&filters[documentId][$ne]=${excludeId}&pagination[limit]=3&populate=Gambar&sort=createdAt:desc`);
@@ -97,20 +85,27 @@ export default async function MadingDetailPage({ params }: { params: Promise<{ i
   }
 
   const judul = data.Judul || "Tanpa Judul";
-  const konten = extractText(data.Konten);
   const kategori = data.Kategori || "KARYA";
+  const kontenMarkdown = data.Konten || ""; // Ambil raw markdown string
   const penulis = data.Penulis || "Siswa YAPI";
   const kelas = data.Kelas || "";
   const mediaItems = getAllMediaInfo(data.Gambar);
   const tanggalRaw = data.Tanggal || data.createdAt;
   const tanggalFormat = tanggalRaw ? new Date(tanggalRaw).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "";
 
-  // Ambil karya serupa
   const rekomendasi = await getRekomendasi(kategori, data.documentId);
+  const isPuisi = kategori.toLowerCase() === 'puisi';
+
+  const imageUrls = mediaItems.filter(m => !m.isVideo).map(m => m.url);
+  const videoItems = mediaItems.filter(m => m.isVideo);
+
+  // Styling wrapper tetap kita pertahankan agar desainnya tetap konsisten
+  const containerStyle = isPuisi 
+    ? "font-serif text-center italic text-xl text-gray-800 bg-gradient-to-b from-amber-50/40 to-orange-50/20 border-y border-amber-200/70 p-8 md:p-12 rounded-3xl max-w-xl mx-auto [&>p]:mb-4 [&>p]:leading-loose shadow-inner overflow-hidden"
+    : "prose prose-cyan font-body text-base md:text-lg text-gray-800 leading-relaxed text-justify max-w-none [&_p]:mb-6 [&_p:last-child]:mb-0 [&_a]:text-cyan-600 [&_a]:underline [&_u]:underline overflow-hidden";
 
   return (
     <main className="w-full pb-20 pt-8 bg-[#f7f9fb] min-h-screen">
-      {/* Container utama dilebarkan agar muat 3 kolom */}
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         
         <Link href="/mading" className="inline-flex items-center gap-2 text-gray-500 hover:text-black font-mono text-xs font-bold mb-8 transition-colors">
@@ -118,17 +113,13 @@ export default async function MadingDetailPage({ params }: { params: Promise<{ i
           KEMBALI KE MADING
         </Link>
 
-        {/* GRID LAYOUT: KIRI (Share), TENGAH (Konten), KANAN (Sidebar) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
-
-          {/* 1. KOLOM KIRI (Share Buttons - Sticky) */}
           <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-28">
               <ShareButtons title={judul} />
             </div>
           </div>
 
-          {/* 2. KOLOM TENGAH (Konten Utama) */}
           <div className="lg:col-span-8">
             <article className="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-gray-100 mb-8">
               <div className="flex items-center gap-4 mb-6">
@@ -142,31 +133,34 @@ export default async function MadingDetailPage({ params }: { params: Promise<{ i
                 {judul}
               </h1>
 
-              {/* Tampilkan Tombol Share versi Mobile di sini */}
               <div className="block lg:hidden mb-10 pb-10 border-b border-gray-100">
                 <p className="font-mono text-[10px] text-gray-400 font-bold tracking-widest uppercase mb-4">Bagikan Karya</p>
                 <ShareButtons title={judul} />
               </div>
 
-              {/* RENDER SEMUA MEDIA */}
-              {mediaItems.length > 0 && (
+              {videoItems.length > 0 && (
                 <div className="mb-10 flex flex-col gap-6">
-                  {mediaItems.map((mediaInfo, idx) => (
+                  {videoItems.map((mediaInfo, idx) => (
                     <div key={idx} className="rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 flex justify-center items-center shadow-sm p-2">
-                      {mediaInfo.isVideo ? (
-                        <video controls className="w-full max-h-175 rounded-xl bg-black" preload="metadata">
-                          <source src={mediaInfo.url} />
-                        </video>
-                      ) : (
-                        <img src={mediaInfo.url} alt={`${judul} - Bagian ${idx + 1}`} className="w-full h-auto max-h-200 object-contain rounded-xl" />
-                      )}
+                      <video controls className="w-full max-h-175 rounded-xl bg-black" preload="metadata">
+                        <source src={mediaInfo.url} />
+                      </video>
                     </div>
                   ))}
                 </div>
               )}
 
-              <div className="font-body text-gray-700 text-base md:text-lg leading-relaxed whitespace-pre-wrap">
-                {konten}
+              {imageUrls.length > 0 && (
+                <div className="mb-10">
+                  <ImageGallery images={imageUrls} alt={judul} />
+                </div>
+              )}
+
+              {/* RENDER MARKDOWN DI SINI */}
+              <div className={containerStyle}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {kontenMarkdown}
+                </ReactMarkdown>
               </div>
 
               <div className="mt-12 pt-8 border-t border-gray-100">
@@ -181,11 +175,9 @@ export default async function MadingDetailPage({ params }: { params: Promise<{ i
             <CommentSection madingId={String(data.id)} />
           </div>
 
-          {/* 3. KOLOM KANAN (Profil Kreator & Rekomendasi) */}
           <div className="lg:col-span-3">
             <div className="sticky top-28 flex flex-col gap-6">
               
-              {/* Box Profil Kreator */}
               <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center">
                 <div className="w-20 h-20 mx-auto rounded-full bg-linear-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-3xl shadow-lg mb-4">
                   {penulis.charAt(0).toUpperCase()}
@@ -200,7 +192,6 @@ export default async function MadingDetailPage({ params }: { params: Promise<{ i
                 </div>
               </div>
 
-              {/* Box Karya Serupa */}
               {rekomendasi.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                   <h4 className="font-mono text-[11px] font-bold text-gray-400 tracking-widest uppercase mb-5 border-b border-gray-100 pb-3">

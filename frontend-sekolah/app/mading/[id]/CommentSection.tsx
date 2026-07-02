@@ -58,7 +58,7 @@ export default function CommentSection({ madingId }: { madingId: string }) {
             Nama: nama,
             Isi: komentar,
             MadingId: String(madingId),
-            Tampilkan: false,
+            Tampilkan: true,
             // Jika ada nilai replyingTo, kirim ID-nya. Jika tidak, kirim null
             ParentId: replyingTo ? String(replyingTo.id) : null 
           }

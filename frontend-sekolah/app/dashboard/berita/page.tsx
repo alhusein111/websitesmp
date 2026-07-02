@@ -1,88 +1,267 @@
+/* eslint-disable react-hooks/static-components */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import toast, { Toaster } from "react-hot-toast";
+import Swal from "sweetalert2";
+
+function getCategoryColor(kategori: string): string {
+  const normalizedCategory = kategori ? kategori.toLowerCase() : "";
+  switch (normalizedCategory) {
+    case 'akademik': return 'bg-blue-100 text-blue-700 border-blue-200';
+    case 'non-akademik': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+    case 'pengumuman': return 'bg-orange-100 text-orange-800 border-orange-200';
+    case 'event sekolah': return 'bg-purple-100 text-purple-700 border-purple-200';
+    default: return 'bg-gray-100 text-gray-700 border-gray-200';
+  }
+}
+
+// PERBAIKAN: Fungsi untuk membaca nama dari field Author
+function getAuthorName(authorData: any): string {
+  if (!authorData) return "Anonim";
+  if (typeof authorData === "string") return authorData; // Format text biasa (Sesuai field Strapi kamu)
+  
+  // Jika suatu saat diubah menjadi relasi tabel User (Strapi v4)
+  if (authorData?.data?.attributes?.username) return authorData.data.attributes.username;
+  if (authorData?.data?.attributes?.name) return authorData.data.attributes.name;
+  
+  // Jika Strapi v5 (flattened response)
+  if (authorData?.username) return authorData.username;
+  if (authorData?.name) return authorData.name;
+  
+  return "Anonim";
+}
 
 export default function BeritaDashboardPage() {
+  const { data: session } = useSession();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // State Paginasi
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
-  const pageSize = 5; // Jumlah data per halaman
+  const [pageSize, setPageSize] = useState<number | string>(10);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [refreshToggle, setRefreshToggle] = useState(0);
 
   useEffect(() => {
-    const fetchArtikel = async () => {
+    const fetchBerita = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/artikels?pagination[page]=${page}&pagination[pageSize]=${pageSize}`,
-          { cache: "no-store" }
-        );
+        const searchFilter = searchTerm 
+          ? `&filters[$or][0][Judul][$containsi]=${searchTerm}&filters[$or][1][Kategori][$containsi]=${searchTerm}` 
+          : "";
+        
+        const sortQuery = `&sort=${sortField}:${sortOrder}`;
+        const currentLimit = pageSize === "Semua" ? 1000 : pageSize;
+        const currentPage = pageSize === "Semua" ? 1 : page;
+        
+        // Populate=* agar data gambar dll ikut terbawa
+        const url = `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/artikels?pagination[page]=${currentPage}&pagination[pageSize]=${currentLimit}${sortQuery}${searchFilter}&populate=*`;
+
+        const res = await fetch(url, { cache: "no-store" });
         const result = await res.json();
+        
         if (res.ok) {
           setData(result.data || []);
           setPageCount(result.meta?.pagination?.pageCount || 1);
         }
       } catch (error) {
-        console.error("Gagal mengambil data artikel:", error);
+        console.error("Gagal mengambil data berita:", error);
+        toast.error("Gagal memuat data dari server.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchArtikel();
-  }, [page]);
+    const delayDebounce = setTimeout(() => {
+      fetchBerita();
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [page, pageSize, searchTerm, sortField, sortOrder, refreshToggle]);
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const handleDelete = async (id: string | number) => {
+    const result = await Swal.fire({
+      title: "Hapus Berita?",
+      text: "Data berita ini akan dihapus secara permanen dan tidak bisa dikembalikan!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#1f2937",
+      confirmButtonText: "Ya, Hapus!",
+      cancelButtonText: "Batal",
+      reverseButtons: true,
+      customClass: { popup: 'rounded-2xl' }
+    });
+
+    if (!result.isConfirmed) return;
+
+    const jwtToken = (session as any)?.jwt;
+    if (!jwtToken) {
+      toast.error("Akses ditolak. Token tidak ditemukan.");
+      return;
+    }
+
+    const toastId = toast.loading("Menghapus data...");
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/artikels/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${jwtToken}` }
+      });
+
+      if (!res.ok) throw new Error("Gagal menghapus data di server.");
+
+      toast.success("Berita berhasil dihapus!", { id: toastId });
+      setRefreshToggle(prev => prev + 1); 
+      
+      if (data.length === 1 && page > 1) {
+        setPage(page - 1);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Terjadi kesalahan saat menghapus data.", { id: toastId });
+    }
+  };
+
+  const SortIcon = ({ field }: { field: string }) => {
+    if (sortField !== field) return <span className="text-gray-300 material-symbols-outlined text-[14px] ml-1">unfold_more</span>;
+    return (
+      <span className="text-black material-symbols-outlined text-[14px] ml-1">
+        {sortOrder === "asc" ? "arrow_upward" : "arrow_downward"}
+      </span>
+    );
+  };
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <Toaster position="top-center" />
+
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Kelola Berita & Artikel</h2>
-          <p className="text-gray-500 text-sm">Daftar artikel resmi yang terbit di website sekolah.</p>
+          <h2 className="text-2xl font-bold">Kelola Berita & Pengumuman</h2>
+          <p className="text-gray-500 text-sm">Daftar artikel, event, dan pengumuman sekolah.</p>
         </div>
-        <Link 
-          href="/dashboard/berita/tambah" 
-          className="bg-black text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-gray-800 transition-colors flex items-center gap-2"
-        >
-          <span className="material-symbols-outlined text-sm">add</span> Tambah Berita
-        </Link>
+        
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1 sm:flex-none">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
+            <input 
+              type="text" 
+              placeholder="Cari judul atau kategori..." 
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
+              className="pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black w-full sm:w-72"
+            />
+          </div>
+
+          <Link 
+            href="/dashboard/berita/tambah" 
+            className="bg-black text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+          >
+            <span className="material-symbols-outlined text-sm">add</span> Tambah Berita
+          </Link>
+        </div>
       </div>
 
-      {/* TABLE DATA */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-200">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm font-semibold">
-                <th className="p-4 pl-6">Judul Artikel</th>
-                <th className="p-4">Kategori</th>
-                <th className="p-4">Tanggal Rilis</th>
-                <th className="p-4 text-center">Respon (👍 / 👎)</th>
+              <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm font-semibold select-none">
+                <th className="p-4 pl-6 cursor-pointer hover:bg-gray-100 transition-colors w-1/3" onClick={() => handleSort('Judul')}>
+                  <div className="flex items-center">Judul Berita <SortIcon field="Judul" /></div>
+                </th>
+                {/* PERBAIKAN: Ubah filter sorting dari 'Penulis' menjadi 'Author' */}
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort('Author')}>
+                  <div className="flex items-center">Penulis / Editor <SortIcon field="Author" /></div>
+                </th>
+                <th className="p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort('Kategori')}>
+                  <div className="flex items-center">Kategori <SortIcon field="Kategori" /></div>
+                </th>
+                <th className="p-4 text-center cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort('Likes')}>
+                  <div className="flex items-center justify-center">Respon <SortIcon field="Likes" /></div>
+                </th>
+                <th className="p-4 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-gray-50 text-gray-700">
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-400 animate-pulse">Memuat data artikel...</td>
+                  <td colSpan={5} className="p-8 text-center text-gray-400 animate-pulse">
+                    <span className="material-symbols-outlined block text-3xl mb-2 animate-spin">refresh</span>
+                    Memuat data berita...
+                  </td>
                 </tr>
               ) : data.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-400">Belum ada data berita/artikel.</td>
+                  <td colSpan={5} className="p-12 text-center text-gray-400">
+                    <span className="material-symbols-outlined block text-4xl mb-2 opacity-50">search_off</span>
+                    Tidak ada berita yang ditemukan.
+                  </td>
                 </tr>
               ) : (
                 data.map((item: any) => (
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="p-4 pl-6 font-semibold text-black max-w-xs truncate">{item.Judul}</td>
+                    <td className="p-4 pl-6">
+                      <div className="font-semibold text-black line-clamp-1">{item.Judul}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">Rilis: {item.Tanggal ? new Date(item.Tanggal).toLocaleDateString('id-ID', { dateStyle: 'medium' }) : "-"}</div>
+                    </td>
                     <td className="p-4">
-                      <span className="bg-amber-50 text-amber-700 px-2 py-1 rounded text-xs font-bold uppercase border border-amber-100">
-                        {item.Kategori || "Umum"}
+                      {/* PERBAIKAN: Panggil getAuthorName dengan item.Author */}
+                      <div className="font-medium text-gray-900">{getAuthorName(item.Author)}</div>
+                    </td>
+                    <td className="p-4">
+                      <span className={`px-2.5 py-1 rounded text-[11px] font-bold border uppercase tracking-wider ${getCategoryColor(item.Kategori)}`}>
+                        {item.Kategori || "Lainnya"}
                       </span>
                     </td>
-                    <td className="p-4 text-gray-500">{item.Tanggal ? new Date(item.Tanggal).toLocaleDateString('id-ID', { dateStyle: 'medium' }) : "-"}</td>
-                    <td className="p-4 text-center font-mono text-xs">
-                      <span className="text-green-600 font-bold">{item.Likes || 0}</span> / <span className="text-red-500 font-bold">{item.Dislikes || 0}</span>
+                    <td className="p-4 text-center font-mono text-xs whitespace-nowrap">
+                      <span className="text-green-600 font-bold bg-green-50 px-2 py-1 rounded border border-green-100">
+                        👍 {item.Likes || 0}
+                      </span>
+                      <span className="text-gray-300 mx-1.5">/</span>
+                      <span className="text-red-500 font-bold bg-red-50 px-2 py-1 rounded border border-red-100">
+                        👎 {item.Dislikes || 0}
+                      </span>
+                    </td>
+                    
+                    <td className="p-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <Link 
+                          href={`/dashboard/berita/edit/${item.documentId || item.id}`}
+                          className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"
+                          title="Edit Data"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">edit</span>
+                        </Link>
+                        
+                        <button 
+                          onClick={() => handleDelete(item.documentId || item.id)}
+                          className="w-8 h-8 rounded-lg bg-red-50 text-red-600 border border-red-100 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all"
+                          title="Hapus Data"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -91,20 +270,47 @@ export default function BeritaDashboardPage() {
           </table>
         </div>
 
-        {/* PAGINASI */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex justify-between items-center text-sm">
-          <span className="text-gray-500">Halaman <strong className="text-black">{page}</strong> dari <strong className="text-black">{pageCount}</strong></span>
-          <div className="flex gap-2">
+        <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col md:flex-row justify-between items-center text-sm gap-4">
+          <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-start">
+            <span className="text-gray-500 font-medium">Tampilkan:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                const val = e.target.value;
+                setPageSize(val === "Semua" ? "Semua" : Number(val));
+                setPage(1);
+              }}
+              className="border border-gray-200 text-black font-semibold rounded-lg text-xs py-1.5 px-3 focus:outline-none focus:border-black cursor-pointer bg-white"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value="Semua">Semua</option>
+            </select>
+          </div>
+
+          <div className="text-gray-500 w-full md:w-auto text-center">
+            {pageSize === "Semua" ? (
+              <span>Menampilkan <strong>Semua</strong> Data</span>
+            ) : (
+              <span>
+                Halaman <strong className="text-black">{page}</strong> dari <strong className="text-black">{pageCount}</strong>
+              </span>
+            )}
+          </div>
+
+          <div className="flex gap-2 w-full md:w-auto justify-center md:justify-end">
             <button 
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              disabled={page === 1 || loading}
+              disabled={page === 1 || loading || pageSize === "Semua"}
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-bold hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 transition-colors"
             >
               Sebelumnya
             </button>
             <button 
               onClick={() => setPage((p) => Math.min(p + 1, pageCount))}
-              disabled={page === pageCount || loading}
+              disabled={page === pageCount || loading || pageSize === "Semua"}
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-bold hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 transition-colors"
             >
               Selanjutnya

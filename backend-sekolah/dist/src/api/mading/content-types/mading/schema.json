@@ -24,18 +24,6 @@
         "Kelas": {
             "type": "string"
         },
-        "Kategori": {
-            "type": "enumeration",
-            "enum": [
-                "Puisi",
-                "Cerpen",
-                "Komik",
-                "Poster",
-                "Lukisan",
-                "Video",
-                "Artikel Siswa"
-            ]
-        },
         "Gambar": {
             "type": "media",
             "multiple": true,
@@ -47,7 +35,19 @@
             ]
         },
         "Konten": {
-            "type": "blocks"
+            "type": "richtext"
+        },
+        "Kategori": {
+            "type": "enumeration",
+            "enum": [
+                "Puisi",
+                "Cerpen",
+                "Komik",
+                "Poster",
+                "Lukisan",
+                "Video",
+                "Artikel Siswa"
+            ]
         },
         "Tanggal": {
             "type": "date"

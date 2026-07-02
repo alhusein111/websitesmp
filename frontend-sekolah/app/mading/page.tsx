@@ -2,6 +2,10 @@ import { strapi } from '@/lib/strapi';
 import MadingClient from './MadingClient';
 import ScrollReveal from '@/components/ScrollReveal';
 
+// FITUR BARU: Memaksa Next.js untuk selalu mengambil data mading paling up-to-date dari Strapi 
+// (Biar mading baru yang di-input via dashboard langsung muncul tanpa perlu build ulang)
+export const dynamic = 'force-dynamic';
+
 async function getMadingData() {
   try {
     const res = await strapi.get('/madings?populate=*&pagination[limit]=100&sort=createdAt:desc');

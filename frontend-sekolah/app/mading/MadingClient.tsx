@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
@@ -7,36 +8,53 @@ import ScrollReveal from '@/components/ScrollReveal';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
+// PERBAIKAN: Fungsi pembersih Markdown dan HTML untuk text cuplikan
 function extractText(content: any): string {
   if (!content) return "";
-  if (typeof content === 'string') return content;
-  if (Array.isArray(content)) {
-    return content.map((block: any) => {
+  
+  let rawText = "";
+
+  if (typeof content === 'string') {
+    rawText = content;
+  } else if (Array.isArray(content)) {
+    rawText = content.map((block: any) => {
       if (block.children && Array.isArray(block.children)) {
-        return block.children.map((child: any) => child.text || "").join('');
+        return block.children.map((child: any) => child.text || "").join(' ');
       }
+      if (typeof block === 'string') return block;
       return "";
-    }).join('\n\n');
+    }).join(' ');
   }
-  return "";
+
+  if (!rawText) return "";
+
+  let cleanText = rawText
+    .replace(/!\[.*?\]\(.*?\)/g, '') // Hapus format gambar markdown
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Ekstrak tulisan dari link markdown
+    .replace(/[#*`_~>-]/g, '') // Hapus formatting markdown
+    .replace(/<[^>]+>/g, '') // Hapus HTML
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&ldquo;/g, '"')
+    .replace(/&rdquo;/g, '"')
+    .replace(/\n+/g, ' ') // Hindari break line di dalam preview card
+    .replace(/\s+/g, ' '); // Singkirkan spasi dobel
+
+  return cleanText.trim();
 }
 
-// Mengambil satu media (gambar pertama) dari format Multiple Media
 function getMediaInfo(media: any, defaultUrl: string) {
   if (!media) return { url: defaultUrl, isVideo: false };
   
   let item = media;
   
-  // Jika formatnya Array (Multiple Media flat v5)
   if (Array.isArray(media) && media.length > 0) {
     item = media[0];
-  } 
-  // Jika formatnya Array di dalam data (Multiple Media v4)
-  else if (media.data && Array.isArray(media.data) && media.data.length > 0) {
+  } else if (media.data && Array.isArray(media.data) && media.data.length > 0) {
     item = media.data[0];
-  } 
-  // Jika single media v4
-  else if (media.data && !Array.isArray(media.data)) {
+  } else if (media.data && !Array.isArray(media.data)) {
     item = media.data;
   }
 
@@ -60,27 +78,18 @@ function getMediaInfo(media: any, defaultUrl: string) {
   return { url, isVideo };
 }
 
-// FITUR BARU: Fungsi untuk menentukan warna badge berdasarkan nama kategori
 function getCategoryColor(kategori: string): string {
   const normalizedCategory = kategori.toLowerCase();
   
   switch (normalizedCategory) {
-    case 'puisi':
-      return 'bg-purple-100 text-purple-700'; // Ungu
-    case 'cerpen':
-      return 'bg-blue-100 text-blue-700';     // Biru
-    case 'komik':
-      return 'bg-orange-100 text-orange-800'; // Oranye
-    case 'poster':
-      return 'bg-rose-100 text-rose-700';     // Pink/Rose
-    case 'lukisan':
-      return 'bg-emerald-100 text-emerald-800';// Hijau Emerald
-    case 'video':
-      return 'bg-red-100 text-red-700';       // Merah
-    case 'artikel siswa':
-      return 'bg-cyan-100 text-cyan-800';     // Cyan/Teal
-    default:
-      return 'bg-gray-100 text-gray-700';     // Abu-abu (Default)
+    case 'puisi': return 'bg-purple-100 text-purple-700';
+    case 'cerpen': return 'bg-blue-100 text-blue-700';
+    case 'komik': return 'bg-orange-100 text-orange-800';
+    case 'poster': return 'bg-rose-100 text-rose-700';
+    case 'lukisan': return 'bg-emerald-100 text-emerald-800';
+    case 'video': return 'bg-red-100 text-red-700';
+    case 'artikel siswa': return 'bg-cyan-100 text-cyan-800';
+    default: return 'bg-gray-100 text-gray-700';
   }
 }
 
@@ -149,11 +158,7 @@ export default function MadingClient({ madings }: { madings: any[] }) {
               
               const isDark = index % 4 === 3; 
               const isGlass = index % 4 === 0; 
-              
-              // Animasi Staggered Mading
               const staggerDelay = 0.1 * (index % 3 + 1);
-              
-              // Ambil warna kategori spesifik
               const badgeColor = getCategoryColor(kategori);
 
               return (
@@ -177,7 +182,6 @@ export default function MadingClient({ madings }: { madings: any[] }) {
 
                     <div className="p-8">
                       <div className="flex justify-between items-center mb-4">
-                        {/* PENERAPAN WARNA KATEGORI DI SINI */}
                         <span className={`font-mono text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full ${badgeColor}`}>
                           {kategori}
                         </span>

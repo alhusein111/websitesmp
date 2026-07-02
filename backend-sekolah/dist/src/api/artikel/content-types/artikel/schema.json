@@ -19,6 +19,9 @@
             "type": "uid",
             "targetField": "Judul"
         },
+        "Author": {
+            "type": "string"
+        },
         "Gambar_Cover": {
             "type": "media",
             "multiple": true,
@@ -29,6 +32,9 @@
                 "audios"
             ]
         },
+        "Konten": {
+            "type": "richtext"
+        },
         "Kategori": {
             "type": "enumeration",
             "enum": [
@@ -37,9 +43,6 @@
                 "Kegiatan",
                 "Umum"
             ]
-        },
-        "Konten": {
-            "type": "blocks"
         },
         "Tanggal": {
             "type": "date"

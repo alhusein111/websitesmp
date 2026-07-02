@@ -27,6 +27,7 @@ export default function Navbar() {
             width={48} 
             height={48} 
             className="w-10 h-10 md:w-12 md:h-12 object-contain"
+            style={{ width: "auto" }}
           />
           <span className="font-display text-xl md:text-2xl font-bold tracking-tight text-black">
             SMP YAPI AL-HUSAENI

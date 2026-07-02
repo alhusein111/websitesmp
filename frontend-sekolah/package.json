@@ -9,12 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@uiw/react-md-editor": "^4.1.1",
     "axios": "^1.17.0",
     "framer-motion": "^12.40.0",
     "next": "16.1.7",
     "next-auth": "^4.24.14",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "sweetalert2": "^11.26.24"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

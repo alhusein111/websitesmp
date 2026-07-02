@@ -451,6 +451,7 @@ export interface ApiArtikelArtikel extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    Author: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -463,7 +464,7 @@ export interface ApiArtikelArtikel extends Struct.CollectionTypeSchema {
     Kategori: Schema.Attribute.Enumeration<
       ['Akademik', 'Prestasi', 'Kegiatan', 'Umum']
     >;
-    Konten: Schema.Attribute.Blocks;
+    Konten: Schema.Attribute.RichText;
     Likes: Schema.Attribute.Integer;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -524,12 +525,15 @@ export interface ApiGuruGuru extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Email: Schema.Attribute.Email;
     Foto: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Kontak: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::guru.guru'> &
       Schema.Attribute.Private;
     Mata_Pelajaran: Schema.Attribute.String;
     Nama: Schema.Attribute.String;
+    NUPTK: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -635,7 +639,7 @@ export interface ApiMadingMading extends Struct.CollectionTypeSchema {
       ]
     >;
     Kelas: Schema.Attribute.String;
-    Konten: Schema.Attribute.Blocks;
+    Konten: Schema.Attribute.RichText;
     Likes: Schema.Attribute.Integer;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -697,8 +701,10 @@ export interface ApiTataUsahaTataUsaha extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Email: Schema.Attribute.Email;
     Foto: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     Jabatan: Schema.Attribute.String;
+    Kontak: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -706,6 +712,7 @@ export interface ApiTataUsahaTataUsaha extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     Nama: Schema.Attribute.String;
+    NUPTK: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

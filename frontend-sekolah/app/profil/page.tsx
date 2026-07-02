@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { strapi } from '@/lib/strapi';
-import ScrollReveal from '@/components/ScrollReveal'; // <-- IMPORT ANIMASI KITA
+import ScrollReveal from '@/components/ScrollReveal';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
@@ -16,30 +19,36 @@ async function getProfilData() {
   }
 }
 
-// Fungsi pembantu untuk mengubah Strapi Blocks menjadi Teks Biasa (Mendukung Bullet Points)
-function extractText(content: any): string {
+// Fungsi Parser Pintar yang Diperbarui (Mencegah teks terpotong & Memperbaiki List)
+function parseStrapiContent(content: any): string {
   if (!content) return "";
   if (typeof content === 'string') return content;
   
   if (Array.isArray(content)) {
     return content.map((block: any) => {
-      // Penanganan khusus untuk tipe "list" (Bullet points / Numbered list)
-      if (block.type === 'list' && Array.isArray(block.children)) {
-        return block.children.map((listItem: any) => {
-          const itemText = listItem.children?.map((child: any) => child.text || "").join('') || "";
-          return `• ${itemText}`; // Menambahkan simbol bullet point
-        }).join('\n');
+      if (block.type === 'paragraph') {
+        return block.children?.map((child: any) => child.text || "").join('') || "";
       }
-      
-      // Penanganan untuk paragraf biasa, heading, dll
+      if (block.type === 'heading') {
+        const level = '#'.repeat(block.level || 1);
+        const text = block.children?.map((child: any) => child.text || "").join('') || "";
+        return `${level} ${text}`;
+      }
+      if (block.type === 'list') {
+        const listItems = block.children?.map((listItem: any) => {
+          const text = listItem.children?.map((child: any) => child.text || "").join('') || "";
+          return block.format === 'ordered' ? `1. ${text}` : `- ${text}`;
+        }).join('\n');
+        // WAJIB ditambahkan enter ekstra agar Markdown membacanya sebagai block list yang valid
+        return `\n\n${listItems}\n\n`; 
+      }
       if (block.children && Array.isArray(block.children)) {
         return block.children.map((child: any) => child.text || "").join('');
       }
-      
       return "";
     }).join('\n\n');
   }
-  return "";
+  return String(content);
 }
 
 function getImageUrl(media: any, defaultUrl: string): string {
@@ -58,13 +67,9 @@ function getImageUrl(media: any, defaultUrl: string): string {
 export default async function ProfilPage() {
   const profil = await getProfilData();
 
-  // Pastikan field sesuai dengan database: sejarah, Visi, Misi
-  const sejarah = extractText(profil?.attributes?.Sejarah || profil?.Sejarah) || "Sejarah sekolah belum ditambahkan di database.";
-  const visi = extractText(profil?.attributes?.Visi || profil?.Visi) || "Visi sekolah belum ditambahkan di database.";
-  
-  // Misi bisa saja berupa paragraf panjang atau list
-  const rawMisi = extractText(profil?.attributes?.Misi || profil?.Misi);
-  const misi = rawMisi ? rawMisi.split('\n').filter(item => item.trim() !== '') : ["Misi sekolah belum ditambahkan di database."];
+  const sejarah = parseStrapiContent(profil?.attributes?.Sejarah || profil?.Sejarah) || "Sejarah sekolah belum ditambahkan di database.";
+  const visi = parseStrapiContent(profil?.attributes?.Visi || profil?.Visi) || "Visi sekolah belum ditambahkan di database.";
+  const misi = parseStrapiContent(profil?.attributes?.Misi || profil?.Misi) || "Misi sekolah belum ditambahkan di database.";
 
   const heroImage = getImageUrl(profil?.attributes?.Hero_Gambar || profil?.Hero_Gambar, "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1600&auto=format&fit=crop");
 
@@ -93,19 +98,41 @@ export default async function ProfilPage() {
 
       {/* 2. BENTO GRID: SEJARAH & VISI MISI */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 py-12 -mt-10 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* SEJARAH CARD (KIRI) */}
           <div className="lg:col-span-7">
-            <ScrollReveal delay={0.2} direction="left" className="h-full">
-              <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-gray-100 h-full">
+            <ScrollReveal delay={0.2} direction="left">
+              <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-gray-100">
                 <div className="flex items-center gap-3 mb-6">
                   <span className="material-symbols-outlined text-black text-3xl">history_edu</span>
                   <h2 className="font-display text-2xl md:text-3xl font-bold text-black">Sejarah Perjalanan</h2>
                 </div>
-                <div className="prose max-w-none font-body text-gray-600 leading-relaxed whitespace-pre-wrap">
-                  {sejarah}
+                
+                <div className="font-body text-gray-600">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({node, ...props}) => <p className="mb-5 leading-relaxed text-justify" {...props} />,
+                      h2: ({node, ...props}) => <h2 className="text-xl font-bold text-black mt-6 mb-3 font-display" {...props} />,
+                      h3: ({node, ...props}) => <h3 className="text-lg font-bold text-gray-800 mt-4 mb-2 font-display" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-extrabold text-black" {...props} />,
+                      // Menambahkan flex-col agar list ke bawah
+                      ul: ({node, ...props}) => <ul className="flex flex-col space-y-3 mb-6 mt-4" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal pl-5 space-y-2 mb-6 mt-4 text-gray-600 marker:text-cyan-600 marker:font-bold" {...props} />,
+                      // Li selalu dirender dengan desain khusus yang cantik
+                      li: ({node, ...props}) => (
+                        <li className="flex items-start gap-3 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
+                          <span className="material-symbols-outlined text-cyan-600 text-[20px] mt-0.5 shrink-0">arrow_circle_right</span>
+                          <div className="leading-relaxed w-full">{props.children}</div>
+                        </li>
+                      ),
+                    }}
+                  >
+                    {sejarah}
+                  </ReactMarkdown>
                 </div>
+
               </div>
             </ScrollReveal>
           </div>
@@ -115,25 +142,37 @@ export default async function ProfilPage() {
             
             {/* Visi */}
             <ScrollReveal delay={0.4} direction="right">
-              <div className="bg-black text-white rounded-3xl p-8 shadow-xl relative overflow-hidden flex flex-col justify-center h-full min-h-50">
+              <div className="bg-black text-white rounded-3xl p-8 shadow-xl relative overflow-hidden flex flex-col justify-center min-h-50">
                 <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-yellow-600/30 rounded-full blur-2xl"></div>
                 <h3 className="font-mono text-xs text-yellow-500 tracking-wider uppercase font-bold mb-3">Visi Kami</h3>
-                <p className="font-display text-xl leading-snug text-white font-bold">{visi}</p>
+                <div className="font-display text-xl leading-snug text-white font-bold">
+                  <ReactMarkdown>{visi}</ReactMarkdown>
+                </div>
               </div>
             </ScrollReveal>
 
             {/* Misi */}
-            <ScrollReveal delay={0.6} direction="right" className="flex-1">
-              <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl h-full">
-                <h3 className="font-mono text-xs text-gray-500 tracking-wider uppercase font-bold mb-4">Misi Utama</h3>
-                <ul className="space-y-4">
-                  {misi.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-cyan-600 text-sm mt-1 shrink-0">check_circle</span>
-                      <span className="font-body text-sm md:text-base text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
+            <ScrollReveal delay={0.6} direction="right">
+              <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl">
+                <h3 className="font-mono text-xs text-gray-500 tracking-wider uppercase font-bold mb-5">Misi Utama</h3>
+                
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({node, ...props}) => <p className="text-gray-700 mb-4 text-justify leading-relaxed" {...props} />,
+                    ul: ({node, ...props}) => <ul className="flex flex-col space-y-4 mt-4" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal pl-5 space-y-3 mt-4 text-gray-700" {...props} />,
+                    li: ({node, ...props}) => (
+                      <li className="flex items-start gap-3">
+                        <span className="material-symbols-outlined text-cyan-600 text-[20px] mt-0.5 shrink-0">check_circle</span>
+                        <div className="font-body text-[15px] md:text-base text-gray-700 leading-relaxed w-full">{props.children}</div>
+                      </li>
+                    )
+                  }}
+                >
+                  {misi}
+                </ReactMarkdown>
+
               </div>
             </ScrollReveal>
 
