@@ -69,7 +69,7 @@ export default function HeroVideoButton({ videoUrl }: HeroVideoButtonProps) {
 
       {/* MODAL POP-UP (LIGHTBOX) */}
       {isOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 md:p-12">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 mt-18 sm:p-6 md:p-12">
           {/* Latar Belakang Gelap (Backdrop) */}
           <div 
             className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"

@@ -74,19 +74,25 @@ export default function StaffDirectoryClient({ gurus, tataUsahas, strapiUrl }: a
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12">
       {/* HEADER */}
-      <ScrollReveal delay={0.1} direction="up">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="font-mono text-xs text-cyan-600 tracking-widest uppercase font-bold bg-cyan-50 px-3 py-1 rounded-full">
-            Direktori Staf
-          </span>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-black mt-4 mb-4">
-            Tim Pendidik & Administrasi
-          </h1>
-          <p className="font-body text-gray-600 text-lg">
-            Mengenal lebih dekat para pahlawan tanpa tanda jasa yang berdedikasi penuh untuk kemajuan siswa dan sekolah.
-          </p>
-        </div>
-      </ScrollReveal>
+      <section className="max-w-7xl mx-auto px-6 md:px-12 text-center mb-12"> 
+        <ScrollReveal delay={0.1} direction="down">
+          <div className="text-center max-w-3xl mx-auto mb-8">
+            <span className="inline-block bg-cyan-100 text-cyan-800 font-mono text-xs font-bold px-4 py-1.5 rounded-full tracking-widest uppercase">
+              Direktori Staf
+            </span>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal delay={0.2} direction="up">  
+            <h1 className="font-display text-4xl md:text-6xl font-bold text-black mb-6 tracking-tight">
+              Tim Pendidik & Administrasi
+            </h1>
+        </ScrollReveal>
+        <ScrollReveal delay={0.3} direction="up">
+            <p className="font-body text-gray-600 text-lg">
+              Mengenal lebih dekat para pahlawan tanpa tanda jasa yang berdedikasi penuh untuk kemajuan siswa dan sekolah.
+            </p>
+        </ScrollReveal>
+      </section>
 
       {/* SECTION 1: GURU */}
       <div className="mb-20">
