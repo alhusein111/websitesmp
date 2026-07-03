@@ -24,7 +24,7 @@ export default function Footer() {
         <div>
           <h4 className="font-mono text-xs font-bold tracking-widest text-gray-300 mb-4">SISTEM</h4>
           <ul className="flex flex-col gap-3 text-sm text-gray-400">
-            <li><a className="hover:text-yellow-500 transition-colors" href="http://localhost:1337/admin">CMS Login</a></li>
+            <li><a className="hover:text-yellow-500 transition-colors" href="https://smpyapialhusaeni.sch.id/admin">CMS Login</a></li>
             <li><a className="hover:text-yellow-500 transition-colors" href="#">Privacy Policy</a></li>
           </ul>
         </div>

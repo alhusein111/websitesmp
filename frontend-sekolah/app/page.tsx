@@ -6,6 +6,9 @@ import { strapi } from '@/lib/strapi';
 import ScrollReveal from '@/components/ScrollReveal';
 import HeroVideoButton from '@/components/HeroVideoButton';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Fungsi Helper untuk mengekstrak URL gambar Strapi dengan aman
 const getImageUrl = (imageObj: any, fallbackUrl: string = "") => {
   if (!imageObj) return fallbackUrl;
@@ -38,30 +41,36 @@ const getImageUrl = (imageObj: any, fallbackUrl: string = "") => {
   return url.startsWith("http") ? url : `${baseUrl}${url}`;
 };
 
-// Fungsi Fetching Data langsung ke Strapi CMS
+// Fungsi Fetching Data langsung ke Strapi CMS (Versi Tahan Banting)
 async function getLandingPageData() {
-  try {
-    const hariIni = new Date().toISOString().split('T')[0];
+  const hariIni = new Date().toISOString().split('T')[0];
 
-    // Tarik data Homepage (Single Type), Berita, Mading, dan Kegiatan sekaligus
-    // Pastikan semua endpoint memanggil parameter populate=*
-    const [homepageRes, artikelRes, madingRes, kegiatanRes] = await Promise.all([
-      strapi.get('/homepage?populate=*'),
-      strapi.get('/artikels?populate=*&pagination[limit]=3&sort=id:desc'),
-      strapi.get('/madings?populate=*&pagination[limit]=3&sort=id:desc'),
-      strapi.get(`/events?filters[TampilkanDiSidebar][$eq]=true&filters[$or][0][TanggalSelesai][$gte]=${hariIni}&filters[$or][1][TanggalMulai][$gte]=${hariIni}&sort=TanggalMulai:asc&pagination[limit]=4&populate=*`)
-    ]);
+  // Fungsi helper agar kalau 1 API gagal/dikunci, website tidak error semua
+  const fetchSafe = async (endpoint: string) => {
+    try {
+      const res = await strapi.get(endpoint);
+      return res.data?.data || null;
+    } catch (error: any) {
+      console.error(`Gagal menarik data dari ${endpoint}:`, error.message);
+      return null;
+    }
+  };
 
-    return {
-      homepage: homepageRes.data?.data || null,
-      artikels: artikelRes.data?.data || [],
-      madings: madingRes.data?.data || [],
-      kegiatan: kegiatanRes.data?.data || [],
-    };
-  } catch (error) {
-    console.error("Gagal menarik data dari Strapi:", error);
-    return { homepage: null, artikels: [], madings: [], kegiatan: [] };
-  }
+  // Sekarang kita tarik datanya satu-satu (sistem antre), bukan borongan (Promise.all)
+  const homepageData = await fetchSafe('/homepage?populate=*');
+  // Ubah sort=id:desc menjadi sort=createdAt:desc
+  const artikelsData = await fetchSafe('/artikels?populate=*&pagination[limit]=3&sort=createdAt:desc');
+  const madingsData = await fetchSafe('/madings?populate=*&pagination[limit]=3&sort=createdAt:desc');
+  
+  // Perhatikan URL Event ini, pastikan sesuai dengan data di Strapi
+  const kegiatanData = await fetchSafe(`/events?filters[TampilkanDiSidebar][$eq]=true&filters[$or][0][TanggalSelesai][$gte]=${hariIni}&filters[$or][1][TanggalMulai][$gte]=${hariIni}&sort=TanggalMulai:asc&pagination[limit]=4&populate=*`);
+
+  return {
+    homepage: homepageData,
+    artikels: artikelsData || [],
+    madings: madingsData || [],
+    kegiatan: kegiatanData || [],
+  };
 }
 
 export default async function Home() {

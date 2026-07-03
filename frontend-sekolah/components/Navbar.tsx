@@ -39,7 +39,8 @@ export default function Navbar() {
             className="w-10 h-10 md:w-12 md:h-12 object-contain"
             style={{ width: "auto" }}
           />
-          <span className="font-display text-xl md:text-2xl font-bold tracking-tight text-black">
+          {/* Bagian span di bawah ini yang diubah kelas Tailwind-nya */}
+          <span className="font-display text-base md:text-lg font-bold tracking-tight text-black whitespace-nowrap">
             SMP YAPI AL-HUSAENI
           </span>
         </Link>
