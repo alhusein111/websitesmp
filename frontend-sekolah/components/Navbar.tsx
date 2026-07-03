@@ -70,7 +70,7 @@ export default function Navbar() {
             </button>
             <div className="absolute top-16 left-0 w-56 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col overflow-hidden">
               <Link href="/program/kurikulum" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">Kurikulum / KOSP</Link>
-              <Link href="/program/keagamaan" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">Pembiasaan Keagamaan</Link>
+              <Link href="/program/keagamaan" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">Kegiatan Keagamaan</Link>
               <Link href="/program/7kaih" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">7KAIH</Link>
               <Link href="/program/literasi" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">Literasi & Numerasi</Link>
             </div>
@@ -143,7 +143,7 @@ export default function Navbar() {
             {mobileMenuOpen === 'program' && (
               <div className="flex flex-col gap-2 pl-4 pb-2">
                 <Link href="/program/kurikulum" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">Kurikulum / KOSP</Link>
-                <Link href="/program/keagamaan" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">Pembiasaan Keagamaan</Link>
+                <Link href="/program/keagamaan" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">Kegiatan Keagamaan</Link>
                 <Link href="/program/7kaih" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">7KAIH</Link>
                 <Link href="/program/literasi" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">Literasi & Numerasi</Link>
               </div>
