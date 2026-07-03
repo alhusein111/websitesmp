@@ -307,7 +307,7 @@ export default function EditMadingPage() {
                 type="text" 
                 value={kelas}
                 onChange={(e) => setKelas(e.target.value)}
-                placeholder="Contoh: XII RPL 2"
+                placeholder="Contoh: 7A / 8B / 9C"
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all text-sm"
               />
             </div>
