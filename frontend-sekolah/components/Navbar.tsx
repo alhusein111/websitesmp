@@ -88,6 +88,7 @@ export default function Navbar() {
               <Link href="https://cbt.smpyapialhusaeni.sch.id/login" target="_blank" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">CBT</Link>
               <Link href="/aplikasi/keuangan" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">Keuangan</Link>
               <Link href="/aplikasi/absensi" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">Absensi</Link>
+              <Link href="https://smpyapi.short.gy/alumnismpyapi" target="_blank" className="px-4 py-3 text-xs font-mono text-gray-700 hover:bg-gray-50 hover:text-black">Alumni</Link>
             </div>
           </div>
         </nav>
@@ -163,6 +164,7 @@ export default function Navbar() {
                 <Link href="https://cbt.smpyapialhusaeni.sch.id/login" target="_blank" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">CBT</Link>
                 <Link href="/aplikasi/keuangan" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">Keuangan</Link>
                 <Link href="/aplikasi/absensi" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">Absensi</Link>
+                <Link href="https://smpyapi.short.gy/alumnismpyapi" target="_blank" onClick={() => setIsOpen(false)} className="text-gray-600 text-sm py-1">Alumni</Link>
               </div>
             )}
           </div>
