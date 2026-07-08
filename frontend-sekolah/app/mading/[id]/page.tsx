@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Metadata } from 'next';
 import { strapi } from '@/lib/strapi';
 import Link from 'next/link';
 import CommentSection from './CommentSection';
@@ -52,6 +53,51 @@ async function getRekomendasi(kategori: string, excludeId: string) {
     return [];
   }
 }
+
+// Metadata untuk halaman mading detail
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const madingId = resolvedParams.id;
+  let data: any = null;
+
+  try {
+    const isNumeric = /^\d+$/.test(madingId);
+    const filterKey = isNumeric ? 'id' : 'documentId';
+    const res = await strapi.get(`/madings?filters[${filterKey}][$eq]=${madingId}&populate=*`);
+    const fetchedItem = res.data?.data?.[0];
+    if (fetchedItem) {
+      data = fetchedItem.attributes || fetchedItem;
+    }
+  } catch (error) {
+    console.error("Gagal mengambil metadata mading:", error);
+  }
+
+  const judul = data?.Judul || "Karya Mading SMP YAPI Al-Husaeni";
+  // Potong konten untuk dijadikan deskripsi (hilangkan karakter aneh markdown)
+  const deskripsi = data?.Konten ? data.Konten.substring(0, 150).replace(/[#*`_>]/g, '') + '...' : "Lihat karya kreatif siswa di Mading Digital SMP YAPI Al-Husaeni.";
+  const thumbnailUrl = data?.Gambar ? getThumbnailUrl(data.Gambar) : "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200";
+
+  return {
+    title: judul,
+    description: deskripsi,
+    openGraph: {
+      title: judul,
+      description: deskripsi,
+      url: `https://smpyapialhusaeni.sch.id/mading/${madingId}`,
+      siteName: 'Mading SMP YAPI Al-Husaeni',
+      images: [{ url: thumbnailUrl, width: 1200, height: 630, alt: judul }],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: judul,
+      description: deskripsi,
+      images: [thumbnailUrl],
+    },
+  };
+}
+
 
 export default async function MadingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;

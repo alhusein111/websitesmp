@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import LikeSection from './LikeSection';
@@ -96,6 +97,47 @@ async function getSidebarData() {
     return { recentArticles: [], upcomingEvents: [] };
   }
 }
+
+// Metadata untuk halaman berita detail
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  
+  // Kita manfaatkan fungsi getArticleDetail yang sudah kamu buat!
+  const article = await getArticleDetail(resolvedParams.id);
+  
+  if (!article) {
+    return { title: 'Berita Tidak Ditemukan' };
+  }
+
+  const data = article.attributes || article;
+  const judul = data.Judul || "Berita SMP YAPI Al-Husaeni";
+  const deskripsi = data.Konten ? data.Konten.substring(0, 150).replace(/[#*`_>]/g, '') + '...' : "Baca selengkapnya di portal resmi SMP YAPI Al-Husaeni.";
+  
+  // Ambil gambar pertama menggunakan fungsi yang sudah kamu buat
+  const imgUrls = getAllImageUrls(data.Gambar_Cover, 'https://images.unsplash.com/photo-1511629091441-ee46146481b6?q=80&w=1200');
+  const coverUrl = imgUrls[0];
+
+  return {
+    title: judul,
+    description: deskripsi,
+    openGraph: {
+      title: judul,
+      description: deskripsi,
+      url: `https://smpyapialhusaeni.sch.id/berita/${resolvedParams.id}`,
+      siteName: 'Portal Berita SMP YAPI Al-Husaeni',
+      images: [{ url: coverUrl, width: 1200, height: 630, alt: judul }],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: judul,
+      description: deskripsi,
+      images: [coverUrl],
+    },
+  };
+}
+
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
