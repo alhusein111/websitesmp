@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
+import type { Metadata } from 'next'; 
 import Link from 'next/link';
 import { strapi } from '@/lib/strapi';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -8,6 +9,12 @@ import HeroVideoButton from '@/components/HeroVideoButton';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+// TAMBAHAN METADATA UNTUK SEO HALAMAN BERANDA
+export const metadata: Metadata = {
+  title: 'Beranda | SMP YAPI Al-Husaeni',
+  description: 'Selamat datang di website resmi SMP YAPI Al-Husaeni. Dapatkan informasi terbaru seputar kegiatan belajar mengajar dan prestasi siswa.',
+};
 
 // Fungsi Helper untuk mengekstrak URL gambar Strapi dengan aman
 const getImageUrl = (imageObj: any, fallbackUrl: string = "") => {

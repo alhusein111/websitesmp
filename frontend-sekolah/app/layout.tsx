@@ -6,8 +6,27 @@ import Footer from "@/components/Footer";
 import { Providers } from './Providers';
 
 export const metadata: Metadata = {
-  title: "SMP YAPI AL-HUSAENI",
-  description: "Membentuk karakter, menginspirasi kreativitas.",
+  title: {
+    default: 'SMP YAPI Al-Husaeni | Cerdas, Islami, Berprestasi',
+    template: '%s | SMP YAPI Al-Husaeni', // Jika halaman lain punya title, akan ditambah akhiran ini
+  },
+  description: 'Website resmi SMP YAPI Al-Husaeni. Informasi pendaftaran siswa baru, berita sekolah, mading digital, dan prestasi siswa.',
+  keywords: ['SMP YAPI Al-Husaeni', 'SMP Swasta Terbaik', 'Sekolah Menengah Pertama', 'Pendidikan Islam', 'Sekolah Berprestasi'],
+  authors: [{ name: 'SMP YAPI Al-Husaeni' }],
+  openGraph: {
+    type: 'website',
+    locale: 'id_ID',
+    url: 'https://smpyapialhusaeni.sch.id',
+    siteName: 'SMP YAPI Al-Husaeni',
+    images: [
+      {
+        url: '/logo-sekolah.png', // Pastikan kamu punya gambar logo/gedung di folder /public
+        width: 1200,
+        height: 630,
+        alt: 'SMP YAPI Al-Husaeni',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
